@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>To-Do List</title>
+  <style>
+    body {
+      background-color: #032B44; /* navy blue background */
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 400px;
+     
+      margin: 80px auto;
+      padding: 50px;
+      background-color: #fff;
+      border: 8px solid #aae4de;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #task-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #task-list li {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+    }
+
+    #task-list li:last-child {
+      border-bottom: none;
+    }
+
+    #new-task {
+      width: 70%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+    }
+
+    #add-task {
+      background-color: #4CAF50;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #add-task:hover {
+      background-color: #3e8e41;
+    }
+
+    .edit-icon {
+      color: #02374c; /* light blue */
+      cursor: pointer;
+      margin: 0 10px;
+    }
+
+    .delete-icon {
+      color: #ae1717; /* light pink */
+      cursor: pointer;
+    }
+
+    .checkbox {
+      margin: 0 10px;
+    }
+
+    .checked {
+      text-decoration: line-through;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>To-Do List</h1>
+    <input id="new-task" type="text" placeholder="Add new task">
+    <button id="add-task">Add</button>
+    <ul id="task-list">
+      <!-- tasks will be rendered here -->
+    </ul>
+  </div>
+
+  <script>
+    const taskList = document.getElementById('task-list');
+    const newTaskInput = document.getElementById('new-task');
+    const addTaskButton = document.getElementById('add-task');
+
+    let tasks = [];
+
+    addTaskButton.addEventListener('click', addTask);
+
+    function addTask() {
+      const newTask = newTaskInput.value.trim();
+      if (newTask) {
+        tasks.push({ text: newTask, checked: false });
+        renderTasks();
+        newTaskInput.value = '';
+      }
+    }
+
+    function renderTasks() {
+      taskList.innerHTML = '';
+      const colors = ['#ADD8E6', '#FFC5C5', '#87CEEB', '#C6E2B5', '#F7DC6F']; // light blue, light pink, light blue, light green, light yellow
+      tasks.forEach((task, index) => {
+        const taskElement = document.createElement('li');
+        taskElement.style.backgroundColor = colors[index % colors.length]; // cycle through colors
+        taskElement.innerHTML = `
+          <input type="checkbox" class="checkbox" ${task.checked? 'checked' : ''} data-task-index="${index}">
+          <span class="${task.checked? 'checked' : ''}">${task.text}</span>
+          <span style="flex-grow: 1"></span>
+          <i class="edit-icon fas fa-edit" data-task-index="${index}"></i>
+          <i class="delete-icon fas fa-trash-alt" data-task-index="${index}"></i>
+        `;
+        taskList.appendChild(taskElement);
+      });
+    }
+
+    taskList.addEventListener('click', (event) => {
+      if (event.target.type === 'checkbox') {
+        const taskIndex = event.target.dataset.taskIndex;
+        tasks[taskIndex].checked = event.target.checked;
+        renderTasks();
+      } else if (event.target.classList.contains('edit-icon')) {
+        const taskIndex = event.target.dataset.taskIndex;
+        const newTask = prompt('Edit task:', tasks[taskIndex].text);
+        if (newTask) {
+          tasks[taskIndex].text = newTask;
+          renderTasks();
+        }
+      } else if (event.target.classList.contains('delete-icon')) {
+        const taskIndex = event.target.dataset.taskIndex;
+        tasks.splice(taskIndex, 1);
+        renderTasks();
+      }
+    });
+
+    renderTasks();
+  </script>
+</body>
+</html>
